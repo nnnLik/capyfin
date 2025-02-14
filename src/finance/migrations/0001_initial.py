@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -51,11 +50,28 @@ class Migration(migrations.Migration):
                 ('rate_datetime', models.DateTimeField(auto_now=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('base_currency', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='base_currency', to='finance.currency')),
-                ('target_currency', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='target_currency', to='finance.currency')),
+                (
+                    'base_currency',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, related_name='base_currency', to='finance.currency'
+                    ),
+                ),
+                (
+                    'target_currency',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='target_currency',
+                        to='finance.currency',
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('base_currency', 'target_currency', 'rate_datetime'), name='unique_base_currency_rate_datetime')],
+                'constraints': [
+                    models.UniqueConstraint(
+                        fields=('base_currency', 'target_currency', 'rate_datetime'),
+                        name='unique_base_currency_rate_datetime',
+                    )
+                ],
             },
         ),
         migrations.CreateModel(

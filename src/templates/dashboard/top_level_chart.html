@@ -1,0 +1,42 @@
+<div class="container-lg d-flex justify-content-center">
+	<div class="col-md-3 mx-3">
+		<div class="card">
+			<div class="card-body mt-3 mb-2 mx-12">
+				<h5 class="card-title">Total Asset Value</h5>
+				<p class="card-text">Current portfolio value: <strong>${{ total_assets }}</strong></p>
+				<h5 class="card-title">Total Expenses</h5>
+				<p class="card-text">Invested funds: <strong>${{ total_spent }}</strong></p>
+				<h5 class="card-title">Profit/Loss</h5>
+				<p class="card-text">Current profit/loss: <strong>{{ profit_loss }} ({{ profit_loss_in_perc }}%)</strong></p>
+			</div>
+		</div>
+		<div class="card mt-3">
+			<div class="card-body text-center">
+				<h5 class="card-title">Total Asset Distribution</h5>
+				<canvas id="assets-pie-chart"></canvas>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-5 mx-3">
+		<div class="row">
+			<div class="col-md-12 mb-3">
+				<div class="card">
+					<div class="card-body text-center">
+						<h5 class="card-title">Profit/Loss Over Time</h5>
+						<canvas id="profit-loss-line-chart" style="height: 300px;"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-12">
+				<div class="card">
+					<div class="card-body text-center">
+						<h5 class="card-title">Total Expenses</h5>
+						<canvas id="spending-bar-chart" style="height: 300px;"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

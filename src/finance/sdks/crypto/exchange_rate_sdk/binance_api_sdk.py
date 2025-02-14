@@ -37,7 +37,7 @@ class BinanceAPISDK(BaseCryptoSDK):
         else:
             yield CoinPriceDTO(
                 code=coin,
-                price=Decimal(data["price"]),
+                price=Decimal(data['price']),
                 currency=finance.const.CurrencyEnum.USD,
                 rate_datetime=datetime.now(),
             )
@@ -50,29 +50,31 @@ class BinanceAPISDK(BaseCryptoSDK):
         interval: str | None = None,
     ) -> Generator[CoinPriceDTO, None, None]:
         for coin in coins:
-            pair = f"{coin}USDT"
+            pair = f'{coin}USDT'
 
             if time_start and time_end and interval:
                 start_timestamp = convert_to_timestamp(time_start)
                 end_timestamp = convert_to_timestamp(time_end)
                 params = {
-                    "symbol": pair,
-                    "interval": interval,
-                    "startTime": start_timestamp,
-                    "endTime": end_timestamp,
-                    "limit": 100,
+                    'symbol': pair,
+                    'interval': interval,
+                    'startTime': start_timestamp,
+                    'endTime': end_timestamp,
+                    'limit': 100,
                 }
                 response = requests.get(self.HISTORICAL_API_URL, params=params)
                 is_historical = True
             else:
-                response = requests.get(self.LATEST_API_URL, params={"symbol": pair})
+                response = requests.get(self.LATEST_API_URL, params={'symbol': pair})
                 is_historical = False
 
             data = response.json()
 
             if response.status_code == status.HTTP_429_TOO_MANY_REQUESTS:
-                raise CoinMarketCapSDKRateLimitExceededException(f'SDK {self.__class__.__name__} API rate limit exceeded')
+                raise CoinMarketCapSDKRateLimitExceededException(
+                    f'SDK {self.__class__.__name__} API rate limit exceeded'
+                )
             elif response.status_code != status.HTTP_200_OK:
-                raise CoinMarketCapSDKUnknownApiException(f"SDK {self.__class__.__name__} error: {data}")
+                raise CoinMarketCapSDKUnknownApiException(f'SDK {self.__class__.__name__} error: {data}')
 
             yield from self._parse_response(coin, data, is_historical)

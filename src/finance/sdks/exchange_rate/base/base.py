@@ -16,5 +16,5 @@ class CurrencyExchangeRateDTO:
 @dataclass
 class BaseExchangeRateSDK(ABC):
     @abstractmethod
-    def get_rate(self, currencies: list[str], target_date: datetime)-> Iterable[CurrencyExchangeRateDTO]:
+    def get_rate(self, currencies: list[str], target_date: datetime) -> Iterable[CurrencyExchangeRateDTO]:
         pass

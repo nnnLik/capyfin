@@ -26,7 +26,7 @@ class FreeCurrencyApiSDK(BaseExchangeRateSDK):
         response_date: str,
         data: dict,
     ) -> Generator[CurrencyExchangeRateDTO, None, None]:
-        for target_currency, rate in data.get("data", {}).get(response_date, {}).items():
+        for target_currency, rate in data.get('data', {}).get(response_date, {}).items():
             yield CurrencyExchangeRateDTO(
                 base_currency=base_currency,
                 target_currency=target_currency,
@@ -39,7 +39,7 @@ class FreeCurrencyApiSDK(BaseExchangeRateSDK):
         currencies: list[str],
         target_date: datetime,
     ) -> Generator[CurrencyExchangeRateDTO, None, None]:
-        headers = {"apikey": self.API_KEY}
+        headers = {'apikey': self.API_KEY}
 
         currencies = list(set(currencies) - {finance.const.CurrencyEnum.USD})
         if not currencies:
@@ -47,13 +47,17 @@ class FreeCurrencyApiSDK(BaseExchangeRateSDK):
 
         query_date = target_date.isoformat()
 
-        params = {"date": query_date, "base_currency": finance.const.CurrencyEnum.USD, "currencies": ",".join(currencies)}
+        params = {
+            'date': query_date,
+            'base_currency': finance.const.CurrencyEnum.USD,
+            'currencies': ','.join(currencies),
+        }
         response = requests.get(self.API_URL, headers=headers, params=params)
         data = response.json()
 
         if response.status_code == status.HTTP_429_TOO_MANY_REQUESTS:
             raise FreeCurrencyApiSDKRateLimitExceededException(f'SDK {self.__class__.__name__} API rate limit exceeded')
         elif response.status_code != status.HTTP_200_OK:
-            raise FreeCurrencyApiUnknownApiException(f"SDK {self.__class__.__name__} error: {data}")
+            raise FreeCurrencyApiUnknownApiException(f'SDK {self.__class__.__name__} error: {data}')
 
         yield from self._parse_response(finance.const.CurrencyEnum.USD, query_date, data)

@@ -3,12 +3,17 @@ from typing import Literal
 from django.conf import settings
 from django.db import models
 
+import finance.const
 import transaction.const
 
 
 class Transaction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    currency = models.ForeignKey('finance.Currency', on_delete=models.PROTECT)
+    currency = models.ForeignKey(
+        'finance.Currency',
+        default=finance.const.CurrencyEnum.USD,
+        on_delete=models.PROTECT,
+    )
     coin = models.ForeignKey('finance.Coin', on_delete=models.PROTECT)
 
     purchased_at = models.DateField()
@@ -21,4 +26,4 @@ class Transaction(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.purchased_at} | {self.coin} ({self.action}) - {self.count} coins"
+        return f'{self.purchased_at} | {self.coin} ({self.action}) - {self.count} coins'

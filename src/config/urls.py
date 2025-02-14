@@ -9,8 +9,10 @@ urlpatterns = [
     path(
         'login/',
         TemplateView.as_view(
-            template_name='auth/login.html', content_type='text/html',
+            template_name='auth/login.html',
+            content_type='text/html',
         ),
     ),
     path('dashboard/', include('dashboard.urls')),
+    path('transaction/', include('transaction.urls')),
 ]

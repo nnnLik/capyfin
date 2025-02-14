@@ -3,13 +3,13 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Literal
 
+import finance.const
 from transaction.models import Transaction
 
 
 @dataclass(frozen=True, slots=True)
 class TransactionDTO:
     user_id: int
-    currency_id: str
     coin_id: str
 
     purchased_at: date
@@ -18,13 +18,25 @@ class TransactionDTO:
     cost_for_one: Decimal
     action: Literal['+', '-']
 
+    currency_id: str = finance.const.CurrencyEnum.USD
+
 
 @dataclass(frozen=True, slots=True)
-class TransactionReadDTO(TransactionDTO):
+class TransactionReadDTO:
     id: int
+
+    user_id: int
+    coin_id: str
+    purchased_at: date
+    count: Decimal
+    spent: Decimal
+    cost_for_one: Decimal
+    action: Literal['+', '-']
 
     created_at: datetime
     updated_at: datetime
+
+    currency_id: str = finance.const.CurrencyEnum.USD
 
 
 class TransactionDAO:
@@ -41,9 +53,9 @@ class TransactionDAO:
                 cost_for_one=transaction.cost_for_one,
                 action=transaction.action,
                 created_at=transaction.created_at,
-                updated_at=transaction.updated_at
+                updated_at=transaction.updated_at,
             )
-            for transaction in Transaction.objects.filter(user_id=user_id)
+            for transaction in Transaction.objects.order_by('-purchased_at').filter(user_id=user_id)
         ]
 
     def create_user_transaction_bulk(

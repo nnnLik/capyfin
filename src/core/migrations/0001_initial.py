@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -19,8 +18,24 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserDetails',
             fields=[
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='user_details', serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('currency', models.ForeignKey(default=finance.const.CurrencyEnum['USD'], on_delete=django.db.models.deletion.PROTECT, to='finance.currency')),
+                (
+                    'user',
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        related_name='user_details',
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    'currency',
+                    models.ForeignKey(
+                        default=finance.const.CurrencyEnum['USD'],
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to='finance.currency',
+                    ),
+                ),
             ],
         ),
     ]

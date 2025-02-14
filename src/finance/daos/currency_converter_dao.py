@@ -1,6 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 from functools import lru_cache
 
+import finance.const
 from finance.models import ExchangeCurrencyRate
 
 
@@ -12,26 +13,37 @@ class CurrencyConverterDAO:
         if base_currency == target_currency:
             return Decimal('1.00')
 
-        if base_currency == "USD":
+        if base_currency == finance.const.CurrencyEnum.USD:
             try:
-                return ExchangeCurrencyRate.objects.filter(
-                    base_currency="USD",
-                    target_currency=target_currency,
-                ).order_by('rate_datetime').last().rate
+                return (
+                    ExchangeCurrencyRate.objects.filter(
+                        base_currency=finance.const.CurrencyEnum.USD,
+                        target_currency=target_currency,
+                    )
+                    .order_by('rate_datetime')
+                    .last()
+                    .rate
+                )
             except ExchangeCurrencyRate.DoesNotExist:
                 raise self.ExchangeRateDoesNotExist
 
-        if target_currency == "USD":
+        if target_currency == finance.const.CurrencyEnum.USD:
             try:
-                return Decimal('1.00') / ExchangeCurrencyRate.objects.filter(
-                    base_currency="USD",
-                    target_currency=base_currency,
-                ).order_by('rate_datetime').last().rate
+                return (
+                    Decimal('1.00')
+                    / ExchangeCurrencyRate.objects.filter(
+                        base_currency=finance.const.CurrencyEnum.USD,
+                        target_currency=base_currency,
+                    )
+                    .order_by('rate_datetime')
+                    .last()
+                    .rate
+                )
             except ExchangeCurrencyRate.DoesNotExist:
                 raise self.ExchangeRateDoesNotExist
 
-        usd_to_base = self._get_rate("USD", base_currency)
-        usd_to_target = self._get_rate("USD", target_currency)
+        usd_to_base = self._get_rate(finance.const.CurrencyEnum.USD, base_currency)
+        usd_to_target = self._get_rate(finance.const.CurrencyEnum.USD, target_currency)
 
         return usd_to_target / usd_to_base
 

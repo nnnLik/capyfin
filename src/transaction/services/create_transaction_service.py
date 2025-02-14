@@ -20,7 +20,6 @@ class CreateTransactionService:
         self,
         user_id: int,
         coin_id: str,
-        currency_id: str,
         count: Decimal,
         spent: Decimal,
         cost_for_one: Decimal,
@@ -30,7 +29,6 @@ class CreateTransactionService:
         transaction_dto = TransactionDTO(
             user_id=user_id,
             coin_id=coin_id,
-            currency_id=currency_id,
             count=count,
             spent=spent,
             cost_for_one=cost_for_one,
@@ -38,4 +36,4 @@ class CreateTransactionService:
             purchased_at=purchased_at,
         )
 
-        self._transaction_dao.create_user_transaction_bulk([transaction_dto,])
+        self._transaction_dao.create_user_transaction_bulk([transaction_dto])

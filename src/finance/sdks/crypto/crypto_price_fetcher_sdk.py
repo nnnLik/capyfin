@@ -28,12 +28,14 @@ class CryptoPriceFetcherSDK(BaseCryptoSDK):
 
         for _ in range(len(self.SDK_CLASSES)):
             try:
-                return tuple(main_sdk_class.get_price(
-                    coins=coins,
-                    time_start=time_start,
-                    time_end=time_end,
-                    interval=interval,
-                ))
+                return tuple(
+                    main_sdk_class.get_price(
+                        coins=coins,
+                        time_start=time_start,
+                        time_end=time_end,
+                        interval=interval,
+                    )
+                )
             except BaseRateLimitExceededException as e:
                 self._logger.warning(f'{self.__class__.__name__} failed with {e.msg}')
                 main_sdk_class = random.choice([sdk for sdk in self.SDK_CLASSES if sdk != main_sdk_class])()

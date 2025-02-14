@@ -4,10 +4,7 @@ from finance.sdks.exchange_rate import CurrencyExchangeRateDTO
 
 class FetchExchangeRatesDAO:
     def fetch_currencies_ids(self) -> list[str]:
-        return [
-            cur
-            for cur in Currency.objects.values_list('code', flat=True)
-        ]
+        return [cur for cur in Currency.objects.values_list('code', flat=True)]
 
     def create_exchange_rates__bulk(
         self,
@@ -20,7 +17,8 @@ class FetchExchangeRatesDAO:
                 target_currency_id=i.target_currency,
                 rate=i.rate,
                 rate_datetime=i.rate_datetime,
-            ) for i in rates
+            )
+            for i in rates
         ]
 
         ExchangeCurrencyRate.objects.bulk_create(

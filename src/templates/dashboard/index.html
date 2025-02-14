@@ -4,97 +4,11 @@
 
 {% block content %}
 <div class="row">
-	<div class="container d-flex justify-content-center">
-		<div class="col-md-3 mx-3">
-			<div class="card">
-				<div class="card-body mt-3 mb-2 mx-12">
-					<h5 class="card-title">Total Asset Value</h5>
-					<p class="card-text">Current portfolio value: <strong>${{ total_assets }}</strong></p>
-					<h5 class="card-title">Total Expenses</h5>
-					<p class="card-text">Invested funds: <strong>${{ total_spent }}</strong></p>
-					<h5 class="card-title">Profit/Loss</h5>
-					<p class="card-text">Current profit/loss: <strong>{{ profit_loss }} ({{ profit_loss_in_perc }}%)</strong></p>
-				</div>
-			</div>
-			<div class="card mt-3">
-				<div class="card-body text-center">
-					<h5 class="card-title">Total Asset Distribution</h5>
-					<canvas id="assets-pie-chart"></canvas>
-				</div>
-			</div>
-		</div>
-
-		<div class="col-md-5 mx-3">
-			<div class="row">
-				<div class="col-md-12 mb-3">
-					<div class="card">
-						<div class="card-body text-center">
-							<h5 class="card-title">Profit/Loss Over Time</h5>
-							<canvas id="profit-loss-line-chart" style="height: 300px;"></canvas>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-md-12">
-					<div class="card">
-						<div class="card-body text-center">
-							<h5 class="card-title">Total Expenses</h5>
-							<canvas id="spending-bar-chart" style="height: 300px;"></canvas>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-<div class="mt-4">
-	<h3>Transaction List</h3>
-	<table class="table table-striped">
-		<thead>
-		<tr>
-			<th>Date</th>
-			<th>Crypto</th>
-			<th>Amount</th>
-			<th>Sum</th>
-			<th>Action</th>
-		</tr>
-		</thead>
-		<tbody>
-		{% for transaction in transactions %}
-		<tr>
-			<td>{{ transaction.purchased_at }}</td>
-			<td>{{ transaction.coin_id }}</td>
-			<td>{{ transaction.count }}</td>
-			<td>${{ transaction.spent }}</td>
-			<td>{{ transaction.action }}</td>
-		</tr>
-		{% endfor %}
-		</tbody>
-	</table>
+	{% include "dashboard/top_level_chart.html" %}
 </div>
 
 <div class="mt-4">
-	<h3>Create Transaction</h3>
-	<form method="POST">
-		{% csrf_token %}
-		{{ form.management_form }}
-		<div class="form-group">
-			{{ form.as_p }}
-		</div>
-		<button type="submit" class="btn btn-primary">Create</button>
-	</form>
-
-	{% if form.errors %}
-	<div class="alert alert-danger mt-3">
-		<ul>
-			{% for field in form %}
-			{% for error in field.errors %}
-			<li>{{ error }}</li>
-			{% endfor %}
-			{% endfor %}
-		</ul>
-	</div>
-	{% endif %}
+	{% include "dashboard/transactions.html" %}
 </div>
 {% endblock %}
 
@@ -105,11 +19,19 @@
   const spendingValues = {{ spending_values|safe }}.map(value => new Number(value));
   const profitLossValues = {{ profit_loss_values|safe }}.map(value => new Number(value));
 
+  const lightColors = {
+    text: '#FFFFFF',
+    gridLines: '#4A4A4A',
+    background: 'rgba(255, 255, 255, 0.1)',
+    border: '#FFFFFF',
+  };
+
   var assetsData = {
     labels: {{ assets_labels|safe }},
     datasets: [{
         data: assetsValues,
         backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50", "#9C27B0"],
+        borderColor: lightColors.border,
     }]
   };
 
@@ -119,6 +41,7 @@
         label: 'Total Expenses',
         data: spendingValues,
         backgroundColor: "#36A2EB",
+        borderColor: lightColors.border,
     }]
   };
 
@@ -128,12 +51,152 @@
         label: 'Profit/Loss',
         data: profitLossValues,
         borderColor: "#FF6384",
-        fill: false
+        backgroundColor: lightColors.background,
+        fill: false,
     }]
   };
 
-  new Chart(document.getElementById("assets-pie-chart"), { type: 'pie', data: assetsData });
-  new Chart(document.getElementById("spending-bar-chart"), { type: 'bar', data: spendingData });
-  new Chart(document.getElementById("profit-loss-line-chart"), { type: 'line', data: profitLossData });
+  const chartOptions = {
+    plugins: {
+      legend: {
+        labels: {
+          color: lightColors.text,
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: lightColors.text,
+        },
+        grid: {
+          color: lightColors.gridLines,
+        },
+      },
+      y: {
+        ticks: {
+          color: lightColors.text,
+        },
+        grid: {
+          color: lightColors.gridLines,
+        },
+      },
+    },
+  };
+
+  new Chart(document.getElementById("assets-pie-chart"), {
+    type: 'pie',
+    data: assetsData,
+    options: chartOptions,
+  });
+
+  new Chart(document.getElementById("spending-bar-chart"), {
+    type: 'bar',
+    data: spendingData,
+    options: chartOptions,
+  });
+
+  new Chart(document.getElementById("profit-loss-line-chart"), {
+    type: 'line',
+    data: profitLossData,
+    options: chartOptions,
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const addTransactionButton = document.getElementById("add-transaction");
+    const transactionTable = document.getElementById("transaction-table");
+
+    transactionTable.addEventListener("click", function (event) {
+      const transactionId = event.target.closest("tr").dataset.transactionId;
+      deleteTransaction(transactionId);
+    });
+
+    function deleteTransaction(transactionId) {
+      if (!confirm("Удалить транзакцию?")) return;
+
+      const deleteTransactionUrl = "{% url 'delete_transaction' transaction_id=0 %}".replace("0", transactionId);
+      fetch(deleteTransactionUrl, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}"
+        },
+      })
+        .then(response => response.json())
+        .then(_ => location.reload())
+        .catch(error => console.error("Error:", error));
+    }
+
+    addTransactionButton.addEventListener("click", function () {
+      if (document.getElementById("new-transaction-row")) return;
+
+      const newRow = document.createElement("tr");
+      newRow.id = "new-transaction-row";
+      newRow.innerHTML = `
+        <td><input type="date" class="form-control" id="new-date"></td>
+        <td>
+            <select class="form-control" id="new-crypto">
+                {% for coin in coins %}
+                    <option value="{{ coin }}">{{ coin }}</option>
+                {% endfor %}
+            </select>
+        </td>
+        <td><input type="number" step="0.0001" class="form-control" id="new-amount"></td>
+        <td><input type="number" step="0.01" class="form-control" id="new-sum"></td>
+        <td><input type="number" step="0.01" class="form-control" id="new-cost-for-one"></td>
+        <td>
+            <select class="form-control" id="new-action">
+                <option value="+">+</option>
+                <option value="-">-</option>
+            </select>
+        </td>
+        <td>
+            <button id="save-transaction" class="btn btn-primary btn-sm">✔</button>
+            <button id="cancel-transaction" class="btn btn-danger btn-sm">✖</button>
+        </td>
+      `;
+      transactionTable.prepend(newRow);
+      document.getElementById("new-date").valueAsDate = new Date();
+
+      document.getElementById("save-transaction").addEventListener("click", saveTransaction);
+      document.getElementById("cancel-transaction").addEventListener("click", function () {
+        newRow.remove();
+      });
+    });
+    function saveTransaction() {
+      const date = document.getElementById("new-date").value;
+      const crypto = document.getElementById("new-crypto").value;
+      const amount = document.getElementById("new-amount").value;
+      const sum = document.getElementById("new-sum").value;
+      const costForOne = document.getElementById("new-cost-for-one").value;
+      const action = document.getElementById("new-action").value;
+
+      if (!date || !crypto || !amount || !sum || !costForOne || !action) {
+        alert("Please fill in all fields");
+        return;
+      }
+
+      fetch("{% url 'create_transaction' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+          purchased_at: date,
+          coin_id: crypto,
+          count: amount,
+          spent: sum,
+          cost_for_one: costForOne,
+          action: action
+        })
+      })
+        .then(response => response.json())
+        .then(_ => location.reload())
+        .catch(error => console.error("Error:", error));
+    }
+  });
 </script>
 {% endblock %}

@@ -17,7 +17,8 @@ class FetchCoinsRatesDAO:
                 rate=i.price,
                 currency_id=i.currency,
                 rate_datetime=i.rate_datetime,
-            ) for i in prices
+            )
+            for i in prices
         ]
 
         ExchangeCoinRate.objects.bulk_create(
