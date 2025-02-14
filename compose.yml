@@ -1,0 +1,56 @@
+x-postgres-creds: &postgres-creds
+  POSTGRES_USER: capyfin_user
+  POSTGRES_PASSWORD: capyfin_pass
+  POSTGRES_DB: capyfin_db
+
+x-app-params: &app-params
+  stdin_open: true
+  tty: true
+  build:
+    context: .
+    target: dev
+  expose:
+    - "6969"
+  volumes:
+    - ./:/opt/app
+  env_file:
+    - vars/dev.env
+
+services:
+  capyfin-service:
+    <<: *app-params
+    container_name: capyfin-service
+    command: ./manage.py runserver 0.0.0.0:6969
+#    command: gunicorn capyfin.wsgi:application --bind 0.0.0.0:6969
+    networks:
+      - capyfin_network
+
+  capyfin-postgres:
+    container_name: capyfin-postgres
+    image: postgres:17.2
+    environment:
+      <<: *postgres-creds
+    expose:
+      - 5432
+    ports:
+      - "6968:5432"
+    volumes:
+      - ./.docker_data/postgres_data:/var/lib/postgresql/data
+    networks:
+      - capyfin_network
+
+  capyfin-nginx:
+    image: nginx:1.26-alpine
+    container_name: capyfin-nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/opt/app/static
+    ports:
+      - "8012:80"
+    networks:
+      - capyfin_network
+
+networks:
+  capyfin_network:
+    name: capyfin_network
+    external: true

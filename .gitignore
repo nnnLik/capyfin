@@ -1,0 +1,7 @@
+.venv
+dev.env
+.docker_data/
+venv/
+__pycache__/
+.idea/
+static/
