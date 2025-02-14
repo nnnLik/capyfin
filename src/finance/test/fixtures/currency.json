@@ -1,0 +1,17 @@
+[
+  {
+    "model": "finance.currency",
+    "pk": "USD",
+    "fields": { "name": "US Dollar" }
+  },
+  {
+    "model": "finance.currency",
+    "pk": "EUR",
+    "fields": { "name": "Euro" }
+  },
+  {
+    "model": "finance.currency",
+    "pk": "RUB",
+    "fields": { "name": "Russian Ruble" }
+  }
+]

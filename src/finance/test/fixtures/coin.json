@@ -1,0 +1,82 @@
+[
+  {
+    "model": "finance.coin",
+    "pk": "BTC",
+    "fields": { "name": "Bitcoin" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "ETH",
+    "fields": { "name": "Ethereum" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "LTC",
+    "fields": { "name": "Litecoin" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "TON",
+    "fields": { "name": "Toncoin" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "BNB",
+    "fields": { "name": "Binance Coin" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "XRP",
+    "fields": { "name": "XRP" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "ADA",
+    "fields": { "name": "Cardano" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "SOL",
+    "fields": { "name": "Solana" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "DOT",
+    "fields": { "name": "Polkadot" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "AVAX",
+    "fields": { "name": "Avalanche" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "MATIC",
+    "fields": { "name": "Polygon" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "DOGE",
+    "fields": { "name": "Dogecoin" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "SHIB",
+    "fields": { "name": "Shiba Inu" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "TRX",
+    "fields": { "name": "Tron" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "LINK",
+    "fields": { "name": "Chainlink" }
+  },
+  {
+    "model": "finance.coin",
+    "pk": "UNI",
+    "fields": { "name": "Uniswap" }
+  }
+]
