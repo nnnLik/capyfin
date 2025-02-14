@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | CapyFin{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="container d-flex justify-content-center">
+		<div class="col-md-3 mx-3">
+			<div class="card">
+				<div class="card-body mt-3 mb-2 mx-12">
+					<h5 class="card-title">Total Asset Value</h5>
+					<p class="card-text">Current portfolio value: <strong>${{ total_assets }}</strong></p>
+					<h5 class="card-title">Total Expenses</h5>
+					<p class="card-text">Invested funds: <strong>${{ total_spent }}</strong></p>
+					<h5 class="card-title">Profit/Loss</h5>
+					<p class="card-text">Current profit/loss: <strong>{{ profit_loss }} ({{ profit_loss_in_perc }}%)</strong></p>
+				</div>
+			</div>
+			<div class="card mt-3">
+				<div class="card-body text-center">
+					<h5 class="card-title">Total Asset Distribution</h5>
+					<canvas id="assets-pie-chart"></canvas>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-5 mx-3">
+			<div class="row">
+				<div class="col-md-12 mb-3">
+					<div class="card">
+						<div class="card-body text-center">
+							<h5 class="card-title">Profit/Loss Over Time</h5>
+							<canvas id="profit-loss-line-chart" style="height: 300px;"></canvas>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-body text-center">
+							<h5 class="card-title">Total Expenses</h5>
+							<canvas id="spending-bar-chart" style="height: 300px;"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<div class="mt-4">
+	<h3>Transaction List</h3>
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Date</th>
+			<th>Crypto</th>
+			<th>Amount</th>
+			<th>Sum</th>
+			<th>Action</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for transaction in transactions %}
+		<tr>
+			<td>{{ transaction.purchased_at }}</td>
+			<td>{{ transaction.coin_id }}</td>
+			<td>{{ transaction.count }}</td>
+			<td>${{ transaction.spent }}</td>
+			<td>{{ transaction.action }}</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+<div class="mt-4">
+	<h3>Create Transaction</h3>
+	<form method="POST">
+		{% csrf_token %}
+		{{ form.management_form }}
+		<div class="form-group">
+			{{ form.as_p }}
+		</div>
+		<button type="submit" class="btn btn-primary">Create</button>
+	</form>
+
+	{% if form.errors %}
+	<div class="alert alert-danger mt-3">
+		<ul>
+			{% for field in form %}
+			{% for error in field.errors %}
+			<li>{{ error }}</li>
+			{% endfor %}
+			{% endfor %}
+		</ul>
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const assetsValues = {{ assets_values|safe }}.map(value => new Number(value));
+  const spendingValues = {{ spending_values|safe }}.map(value => new Number(value));
+  const profitLossValues = {{ profit_loss_values|safe }}.map(value => new Number(value));
+
+  var assetsData = {
+    labels: {{ assets_labels|safe }},
+    datasets: [{
+        data: assetsValues,
+        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50", "#9C27B0"],
+    }]
+  };
+
+  var spendingData = {
+    labels: {{ spending_labels|safe }},
+    datasets: [{
+        label: 'Total Expenses',
+        data: spendingValues,
+        backgroundColor: "#36A2EB",
+    }]
+  };
+
+  var profitLossData = {
+    labels: {{ profit_loss_labels|safe }},
+    datasets: [{
+        label: 'Profit/Loss',
+        data: profitLossValues,
+        borderColor: "#FF6384",
+        fill: false
+    }]
+  };
+
+  new Chart(document.getElementById("assets-pie-chart"), { type: 'pie', data: assetsData });
+  new Chart(document.getElementById("spending-bar-chart"), { type: 'bar', data: spendingData });
+  new Chart(document.getElementById("profit-loss-line-chart"), { type: 'line', data: profitLossData });
+</script>
+{% endblock %}
