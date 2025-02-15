@@ -11,7 +11,7 @@ from finance.models import Coin
 class TransactionForm(forms.ModelForm):
     coin_id = forms.ChoiceField(
         choices=[(coin.pk, coin.name) for coin in Coin.objects.all()],
-        required=True,
+        # required=True,
         label='Crypto Coin',
     )
     cost_for_one = forms.DecimalField(
@@ -46,7 +46,7 @@ class TransactionForm(forms.ModelForm):
 
     class Meta:
         model = Transaction
-        fields = ['purchased_at', 'coin', 'count', 'spent', 'cost_for_one', 'action']
+        fields = ['purchased_at', 'coin_id', 'count', 'spent', 'cost_for_one', 'action']
 
     def clean_spent(self) -> Decimal:
         spent: Decimal | None = self.cleaned_data.get('spent')

@@ -106,12 +106,15 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const addTransactionButton = document.getElementById("add-transaction");
+    const deleteTransactionButton = document.getElementById("delete-transaction");
     const transactionTable = document.getElementById("transaction-table");
 
-    transactionTable.addEventListener("click", function (event) {
-      const transactionId = event.target.closest("tr").dataset.transactionId;
-      deleteTransaction(transactionId);
-    });
+    if (deleteTransactionButton) {
+      deleteTransactionButton.addEventListener("click", function (event) {
+        const transactionId = event.target.closest("tr").dataset.transactionId;
+        deleteTransaction(transactionId);
+      })
+    }
 
     function deleteTransaction(transactionId) {
       if (!confirm("Удалить транзакцию?")) return;
